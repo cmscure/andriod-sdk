@@ -1,4 +1,4 @@
-package com.example.cmscuresdk
+package com.sdk.cmscuresdk
 
 // Imports - Ensure all are present
 import android.content.Context
@@ -13,11 +13,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
@@ -27,7 +23,6 @@ import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
@@ -35,12 +30,11 @@ import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.TimeUnit
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
-object CMSCrue {
+object CMSCure {
     private var isSdkInitialized = false
     // --- START: Log Tags (Simple) ---
     private const val baseURL = "http://192.168.65.16:5050"
@@ -254,9 +248,9 @@ object CMSCrue {
         Log.i(TAG, "$SDK_NAME Attempting online authentication...")
         val jsonBody = JSONObject().apply {
             // Use the credentials stored in the object's properties
-            put("apiKey", this@CMSCrue.apiKey)
-            put("projectId", this@CMSCrue.projectId)
-            put("projectSecret", this@CMSCrue.secretKey)
+            put("apiKey", this@CMSCure.apiKey)
+            put("projectId", this@CMSCure.projectId)
+            put("projectSecret", this@CMSCure.secretKey)
         }
         // Ensure URL is correct and uses the object's projectId
         val url = "$baseURL/api/sdk/auth?projectId=${this.projectId}" // Verify IP/Port
