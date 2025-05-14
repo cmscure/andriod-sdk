@@ -1,7 +1,7 @@
-# CMSCure Android SDK
+# CMSCure Android SDK ![JitPack](https://jitpack.io/v/cmscure/andriod-sdk.svg) ![License](https://img.shields.io/badge/license-Apache%202.0-blue)
 
-The official Android SDK for integrating with the CMSCure content management platform.  
-This SDK enables real-time content updates, dynamic localization, remote asset delivery, and secure project-based configuration.
+The official Android SDK for integrating with the [CMSCure](https://app.cmscure.com) content management platform.  
+This SDK enables real-time content updates, multi-language localization, remote asset delivery (text, images, colors), and secure project-based configuration.
 
 ---
 
@@ -9,83 +9,90 @@ This SDK enables real-time content updates, dynamic localization, remote asset d
 
 ### 1. Add JitPack to your root `settings.gradle.kts`:
 
-```
+```kotlin
 dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-    maven { url = uri(“https://jitpack.io”) }
-  }
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
 }
 ```
 
 ### 2. Add the SDK dependency in `app/build.gradle.kts`:
 
-```implementation(“com.github.cmscure:andriod-sdk:1.0.2”)```
+```kotlin
+implementation("com.github.cmscure:andriod-sdk:1.0.2")
+```
 
 ---
 
 ## 🚀 Getting Started
 
-### Initialize the SDK (e.g. in `MyApplication.kt`):
+### Initialize the SDK (e.g. in `MyApplication.kt`)
 
-```
+```kotlin
 import com.cmscure.sdk.CMSCureSDK
 
 class MyApplication : Application() {
-  override fun onCreate() {
-    super.onCreate()
+    override fun onCreate() {
+        super.onCreate()
+
         CMSCureSDK.init(
-        context = this,
-        apiKey = "your-api-key",
-        projectId = "your-project-id",
-        defaultLanguage = "en"
-    )
+            context = this,
+            apiKey = "your-api-key",
+            projectId = "your-project-id",
+            defaultLanguage = "en"
+        )
+    }
 }
 ```
 
-### Fetch content dynamically:
+### Fetch content in your app
 
-```
-val title = CMSCureSDK.translation(“welcome_title”)
-val colorHex = CMSCureSDK.color(“primaryBackground”)
-val imageUrl = CMSCureSDK.image(“onboarding_banner”)
+```kotlin
+val title = CMSCureSDK.translation("welcome_title")
+val colorHex = CMSCureSDK.color("primaryBackground")
+val imageUrl = CMSCureSDK.image("onboarding_banner")
 ```
 
 ---
 
-## 🛠️ Requirements
+## 🛠 Requirements
 
-- minSdk: 24
-- targetSdk: 35
-- Java: Compiles with Java 11, runtime requires Java 17+
-- Kotlin: Compatible with Kotlin 1.9+
+- **minSdk:** 24  
+- **targetSdk:** 35  
+- **Java:** 11 (build), 17+ (Gradle runtime)  
+- **Kotlin:** 1.9+
 
 ---
 
-## 📡 Features
+## ✨ Features
 
-- 🔄 Realtime WebSocket updates
-- 🌐 Multi-language content localization
-- 🎨 Remote color value support
-- 🖼️ Remote image asset delivery
-- 🔐 API key + project isolation
-- 💾 Local cache with auto fallback
+- 🔄 Real-time WebSocket sync
+- 🌍 Multi-language translation
+- 🎨 Remote color styling (hex support)
+- 🖼️ Remote image asset URLs
+- 🔐 API Key + Project ID isolation
+- 💾 Local caching + fallback system
+
+---
+
+## 🧪 Demo App
+
+➡️ [CMSCureDemoApp on GitHub](https://github.com/cmscure/CMSCureDemoApp)
 
 ---
 
 ## 📄 License
 
-Licensed under the Apache License 2.0  
-http://www.apache.org/licenses/LICENSE-2.0.txt
+This SDK is licensed under the Apache License 2.0.  
+[Read Full License](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ---
 
 ## 💬 Support
 
-For issues or bug reports:  
-https://github.com/cmscure/andriod-sdk/issues
-
-Enterprise inquiries:  
-info@reignsol.com
+- Questions / Issues: [GitHub Issues](https://github.com/cmscure/andriod-sdk/issues)  
+- Contact us: **info@reignsol.com**
