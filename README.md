@@ -79,12 +79,6 @@ val imageUrl = CMSCureSDK.image("onboarding_banner")
 
 ---
 
-## 🧪 Demo App
-
-➡️ [CMSCureDemoApp on GitHub](https://github.com/cmscure/CMSCureDemoApp)
-
----
-
 ## 📄 License
 
 This SDK is licensed under the Apache License 2.0.  
