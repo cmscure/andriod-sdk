@@ -1,7 +1,13 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.library") version "8.2.0"
+    id("org.jetbrains.kotlin.android") version "1.9.23"
     id("maven-publish")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
 
 android {
@@ -43,9 +49,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    // implementation(libs.material) // Uncomment if material is used in SDK UI
+    // AndroidX core + appcompat
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -66,9 +72,9 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.1")
 
     // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
 // JitPack-compatible publishing block
@@ -79,7 +85,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.cmscure"              // GitHub username or org
                 artifactId = "andriod-sdk"                  // GitHub repo name
-                version = "1.0.0"                            // Optional: JitPack overrides this with Git tag
+                version = "1.0.1"                            // Optional: JitPack overrides this with Git tag
 
                 pom {
                     name.set("CMSCure Android SDK")
@@ -96,7 +102,7 @@ afterEvaluate {
                         developer {
                             id.set("cmscure")
                             name.set("CMSCure Team")
-                            email.set("your-contact-email@example.com") // 🔁 Replace this
+                            email.set("info@reignsol.com") // 🔁 Replace this
                             organization.set("CMSCure")
                             organizationUrl.set("https://github.com/cmscure")
                         }

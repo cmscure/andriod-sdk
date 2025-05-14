@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.cmscure.sdk-merged_res-30:/values-v18/values-v18.xml",
+            "map": [
+                {
+                    "source": "/Users/hamzahasan/.gradle/caches/8.12/transforms/80ce96bcddc17ee467695225a5ab0586/transformed/appcompat-1.6.1/res/values-v18/values-v18.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "48",
+                        "endOffsets": "99"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.cmscure.sdk-mergeReleaseResources-28:/values-v18/values-v18.xml",
+            "map": [
+                {
+                    "source": "/Users/hamzahasan/.gradle/caches/8.12/transforms/80ce96bcddc17ee467695225a5ab0586/transformed/appcompat-1.6.1/res/values-v18/values-v18.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "48",
+                        "endOffsets": "99"
+                    }
+                }
+            ]
+        }
+    ]
+}
