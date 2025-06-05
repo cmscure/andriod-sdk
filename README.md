@@ -23,7 +23,7 @@ dependencyResolutionManagement {
 ### 2. Add the SDK dependency in `app/build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.cmscure:andriod-sdk:1.0.2")
+implementation("com.github.cmscure:andriod-sdk:1.0.3")
 ```
 
 ---
