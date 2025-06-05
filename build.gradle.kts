@@ -85,7 +85,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.cmscure"              // GitHub username or org
                 artifactId = "andriod-sdk"                  // GitHub repo name
-                version = "1.0.3"                            // Optional: JitPack overrides this with Git tag
+                version = "1.0.4"                            // Optional: JitPack overrides this with Git tag
 
                 pom {
                     name.set("CMSCure Android SDK")
