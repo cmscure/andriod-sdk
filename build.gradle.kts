@@ -41,6 +41,15 @@ android {
         jvmTarget = "11"
     }
 
+    // CRITICAL: Enable Compose support
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.11" // Match your Kotlin version
+    }
+
     // Include sources and javadoc jars in release artifact
     publishing {
         singleVariant("release") {
@@ -54,6 +63,16 @@ dependencies {
     // AndroidX core + appcompat
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // CRITICAL: Add Compose dependencies
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
+    implementation(composeBom)
+    api("androidx.compose.ui:ui")
+    api("androidx.compose.ui:ui-graphics")
+    api("androidx.compose.runtime:runtime")
+    api("androidx.compose.material3:material3")
+
+    // Coil for Compose (not the old version)
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Networking
@@ -86,9 +105,9 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                groupId = "com.github.cmscure"              // GitHub username or org
-                artifactId = "andriod-sdk"                  // GitHub repo name
-                version = "1.0.4"                            // Optional: JitPack overrides this with Git tag
+                groupId = "com.github.cmscure"
+                artifactId = "andriod-sdk"
+                version = "1.0.12"  // Bump version for the fix
 
                 pom {
                     name.set("CMSCure Android SDK")
@@ -105,7 +124,7 @@ afterEvaluate {
                         developer {
                             id.set("cmscure")
                             name.set("CMSCure Team")
-                            email.set("info@reignsol.com") // 🔁 Replace this
+                            email.set("info@reignsol.com")
                             organization.set("CMSCure")
                             organizationUrl.set("https://github.com/cmscure")
                         }
