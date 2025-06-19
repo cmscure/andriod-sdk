@@ -3,12 +3,17 @@ package com.cmscure.sdk
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -143,13 +148,13 @@ object CMSCureSDK {
      * Configures the SDK with necessary project credentials.
      * This method **MUST** be called once after [init].
      */
-    fun configure(context: Context, projectId: String, apiKey: String, serverUrlString: String = "https://app.cmscure.com") {
+    fun configure(context: Context, projectId: String, apiKey: String) {
         if (projectId.isBlank() || apiKey.isBlank()) {
             logError("Config failed: Project ID and API Key cannot be empty.")
             return
         }
-        val serverUrl = try { URL(serverUrlString) } catch (e: MalformedURLException) {
-            logError("Config failed: Invalid server URL '$serverUrlString'"); return
+        val serverUrl = try { URL("https://app.cmscure.com") } catch (e: MalformedURLException) {
+            logError("Config failed: Invalid server URL 'https://app.cmscure.com'"); return
         }
 
         synchronized(configLock) {
@@ -166,6 +171,43 @@ object CMSCureSDK {
 
         logDebug("SDK Configured for Project $projectId")
         performAuthentication()
+    }
+
+    /**
+     * Fetches the list of available language codes supported by the configured project from the backend server.
+     * If the server request fails, it attempts to provide a list of languages inferred from the local cache.
+     *
+     * @param completion A callback function that receives a list of language code strings (e.g., `["en", "fr"]`).
+     * The list may be empty if no languages can be determined. This callback is invoked on the main (UI) thread.
+     */
+    fun availableLanguages(completion: (List<String>) -> Unit) {
+        val config = getCurrentConfiguration() ?: run {
+            logError("GetLangs: SDK not configured.")
+            Handler(Looper.getMainLooper()).post { completion(emptyList()) }
+            return
+        }
+
+        coroutineScope.launch {
+            try {
+                val response = apiService?.getAvailableLanguages(config.projectId, config.apiKey)
+                val languagesFromServer = response?.languages ?: emptyList()
+                logDebug("Available languages fetched from server: $languagesFromServer")
+                withContext(Dispatchers.Main) { completion(languagesFromServer) }
+            } catch (e: Exception) {
+                logError("Failed to fetch available languages from server: ${e.message}")
+                val cachedLangs = synchronized(cacheLock) {
+                    cache.values.asSequence()
+                        .flatMap { it.values.asSequence() }
+                        .flatMap { it.keys.asSequence() }
+                        .distinct()
+                        .filter { it != "color" && it != "url" }
+                        .sorted()
+                        .toList()
+                }
+                logDebug("Falling back to languages inferred from cache: $cachedLangs")
+                withContext(Dispatchers.Main) { completion(cachedLangs) }
+            }
+        }
     }
 
     private fun performAuthentication() {
@@ -556,11 +598,21 @@ fun cureColor(key: String, default: Color = Color.Gray): State<Color> {
  * A Composable that provides a reactive state for a global image asset's URL string.
  */
 @Composable
-fun cureImage(key: String, default: String? = null): State<String?> {
-    return produceState(initialValue = CMSCureSDK.imageURL(forKey = key) ?: default) {
-        CMSCureSDK.contentUpdateFlow.collectLatest { id ->
-            if (id == CMSCureSDK.IMAGES_UPDATED || id == CMSCureSDK.ALL_SCREENS_UPDATED) {
-                value = CMSCureSDK.imageURL(forKey = key) ?: default
+fun cureImage(key: String, tab: String? = null, default: String? = null): State<String?> {
+    val initialValue = if (tab == null) {
+        CMSCureSDK.imageURL(forKey = key)
+    } else {
+        CMSCureSDK.translation(forKey = key, inTab = tab).takeIf { it.isNotBlank() }
+    } ?: default
+
+    return produceState(initialValue = initialValue) {
+        CMSCureSDK.contentUpdateFlow.collectLatest { updatedIdentifier ->
+            if (updatedIdentifier == CMSCureSDK.ALL_SCREENS_UPDATED || (tab == null && updatedIdentifier == CMSCureSDK.IMAGES_UPDATED) || updatedIdentifier == tab) {
+                value = if (tab == null) {
+                    CMSCureSDK.imageURL(forKey = key)
+                } else {
+                    CMSCureSDK.translation(forKey = key, inTab = tab).takeIf { it.isNotBlank() }
+                } ?: default
             }
         }
     }
@@ -589,16 +641,26 @@ fun cureDataStore(apiIdentifier: String): State<List<DataStoreItem>> {
 fun CureSDKImage(
     url: String?,
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit // Added this parameter
 ) {
+    val context = CMSCureSDK.applicationContext
+    val imageLoader = CMSCureSDK.imageLoader
+    if (context == null || imageLoader == null) {
+        // Render a placeholder or nothing if SDK is not initialized
+        Box(modifier.background(Color.Gray.copy(alpha = 0.1f)))
+        return
+    }
+
     AsyncImage(
-        model = ImageRequest.Builder(CMSCureSDK.applicationContext!!)
+        model = ImageRequest.Builder(context)
             .data(url)
             .crossfade(true)
             .build(),
         contentDescription = contentDescription,
-        imageLoader = CMSCureSDK.imageLoader!!,
-        modifier = modifier
+        imageLoader = imageLoader,
+        modifier = modifier,
+        contentScale = contentScale // Pass the parameter here
     )
 }
 

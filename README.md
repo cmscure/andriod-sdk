@@ -42,7 +42,7 @@ dependencyResolutionManagement {
 // In your app/build.gradle.kts
 dependencies {
     // CMSCure SDK
-    implementation("com.github.cmscure:andriod-sdk:1.0.6") // Use the latest version
+    implementation("com.github.cmscure:andriod-sdk:1.0.7") // Use the latest version
 
     // Add Coil for displaying images. The SDK's helpers depend on it.
     implementation("io.coil-kt:coil-compose:2.6.0")
@@ -78,8 +78,7 @@ class YourApplication : Application() {
         CMSCureSDK.configure(
             context = applicationContext,
             projectId = "YOUR_PROJECT_ID",
-            apiKey = "YOUR_API_KEY",
-            projectSecret = "YOUR_PROJECT_SECRET"
+            apiKey = "YOUR_API_KEY"
         )
 
         // Optional: Enable debug logs
