@@ -564,10 +564,10 @@ sealed class JSONValue {
 
 /**
  * A Composable that provides a reactive state for a single translation string.
- * The view will automatically recompose when the translation is updated.
+ * The view will automatically recompose whenever the translation is updated.
  */
 @Composable
-fun cureString(key: String, tab: String, default: String = ""): State<String> {
+fun cureString(key: String, tab: String, default: String): State<String> {
     return produceState(initialValue = CMSCureSDK.translation(forKey = key, inTab = tab).ifEmpty { default }) {
         CMSCureSDK.contentUpdateFlow.collectLatest { updatedTab ->
             if (updatedTab == tab || updatedTab == CMSCureSDK.ALL_SCREENS_UPDATED) {
@@ -577,15 +577,18 @@ fun cureString(key: String, tab: String, default: String = ""): State<String> {
     }
 }
 
+/** Overload for cureString with a default empty string. */
+@Composable
+fun cureString(key: String, tab: String): State<String> = cureString(key, tab, default = "")
+
 /**
  * A Composable that provides a reactive state for a single color.
  */
 @Composable
-fun cureColor(key: String, default: Color = Color.Gray): State<Color> {
+fun cureColor(key: String, default: Color): State<Color> {
     fun parseColor(hex: String?) = hex?.let {
         try { Color(android.graphics.Color.parseColor(it)) } catch (e: Exception) { default }
     } ?: default
-
     return produceState(initialValue = parseColor(CMSCureSDK.colorValue(forKey = key))) {
         CMSCureSDK.contentUpdateFlow.collectLatest { id ->
             if (id == CMSCureSDK.COLORS_UPDATED || id == CMSCureSDK.ALL_SCREENS_UPDATED) {
@@ -595,29 +598,31 @@ fun cureColor(key: String, default: Color = Color.Gray): State<Color> {
     }
 }
 
+/** Overload for cureColor with a default of Color.Gray. */
+@Composable
+fun cureColor(key: String): State<Color> = cureColor(key, default = Color.Gray)
+
+
 /**
- * A Composable that provides a reactive state for a global image asset's URL string.
+ * A Composable that provides a reactive state for an image asset's URL string.
  */
 @Composable
 fun cureImage(key: String, tab: String? = null, default: String? = null): State<String?> {
-    val initialValue = if (tab == null) {
-        CMSCureSDK.imageURL(forKey = key)
-    } else {
-        CMSCureSDK.translation(forKey = key, inTab = tab).takeIf { it.isNotBlank() }
-    } ?: default
+    val initialValue = (if (tab == null) CMSCureSDK.imageURL(forKey = key) else CMSCureSDK.translation(forKey = key, inTab = tab).takeIf { it.isNotBlank() }) ?: default
 
     return produceState(initialValue = initialValue) {
         CMSCureSDK.contentUpdateFlow.collectLatest { updatedIdentifier ->
             if (updatedIdentifier == CMSCureSDK.ALL_SCREENS_UPDATED || (tab == null && updatedIdentifier == CMSCureSDK.IMAGES_UPDATED) || updatedIdentifier == tab) {
-                value = if (tab == null) {
-                    CMSCureSDK.imageURL(forKey = key)
-                } else {
-                    CMSCureSDK.translation(forKey = key, inTab = tab).takeIf { it.isNotBlank() }
-                } ?: default
+                value = (if (tab == null) CMSCureSDK.imageURL(forKey = key) else CMSCureSDK.translation(forKey = key, inTab = tab).takeIf { it.isNotBlank() }) ?: default
             }
         }
     }
 }
+
+/** Overload for cureImage that assumes a global asset. */
+@Composable
+fun cureImage(key: String): State<String?> = cureImage(key, tab = null, default = null)
+
 
 /**
  * A Composable that provides a reactive state for a list of items from a Data Store.
@@ -625,7 +630,9 @@ fun cureImage(key: String, tab: String? = null, default: String? = null): State<
 @Composable
 fun cureDataStore(apiIdentifier: String): State<List<DataStoreItem>> {
     return produceState<List<DataStoreItem>>(initialValue = CMSCureSDK.getStoreItems(forIdentifier = apiIdentifier)) {
-        CMSCureSDK.syncStore(apiIdentifier) { if(it) value = CMSCureSDK.getStoreItems(forIdentifier = apiIdentifier) }
+        CMSCureSDK.syncStore(apiIdentifier) { success ->
+            if(success) value = CMSCureSDK.getStoreItems(forIdentifier = apiIdentifier)
+        }
         CMSCureSDK.contentUpdateFlow.collectLatest { id ->
             if (id == apiIdentifier || id == CMSCureSDK.ALL_SCREENS_UPDATED) {
                 value = CMSCureSDK.getStoreItems(forIdentifier = apiIdentifier)
@@ -636,19 +643,17 @@ fun cureDataStore(apiIdentifier: String): State<List<DataStoreItem>> {
 
 /**
  * A cache-enabled Composable for displaying images from CMSCure.
- * Internally uses Coil for image loading and caching.
  */
 @Composable
 fun CureSDKImage(
     url: String?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit // Added this parameter
+    contentScale: ContentScale = ContentScale.Fit
 ) {
     val context = CMSCureSDK.applicationContext
     val imageLoader = CMSCureSDK.imageLoader
     if (context == null || imageLoader == null) {
-        // Render a placeholder or nothing if SDK is not initialized
         Box(modifier.background(Color.Gray.copy(alpha = 0.1f)))
         return
     }
@@ -661,7 +666,7 @@ fun CureSDKImage(
         contentDescription = contentDescription,
         imageLoader = imageLoader,
         modifier = modifier,
-        contentScale = contentScale // Pass the parameter here
+        contentScale = contentScale
     )
 }
 
