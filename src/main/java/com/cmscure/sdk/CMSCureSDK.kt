@@ -114,8 +114,8 @@ object CMSCureSDK {
     val contentUpdateFlow: SharedFlow<String> = _contentUpdateFlow.asSharedFlow()
 
     const val ALL_SCREENS_UPDATED = "__ALL_SCREENS_UPDATED__"
-    const val COLORS_UPDATED = "__COLORS_UPDATED__"
-    const val IMAGES_UPDATED = "__IMAGES_UPDATED__"
+    const val COLORS_UPDATED = "__colors__"
+    const val IMAGES_UPDATED = "__images__"
 
     private interface ApiService {
         @POST("/api/sdk/auth")
@@ -255,14 +255,25 @@ object CMSCureSDK {
     private fun connectSocketIfNeeded() {
         val config = getCurrentConfiguration() ?: return
         if (socket?.connected() == true) return
+
         synchronized(socketLock) {
+            socket?.disconnect()?.off()
             try {
-                val opts = IO.Options.builder().setPath("/socket.io/").setTransports(arrayOf(io.socket.engineio.client.transports.WebSocket.NAME)).build()
-                socket = IO.socket(URI.create("wss://app.cmscure.com"), opts)
+                val opts = IO.Options.builder()
+                    .setForceNew(true)
+                    .setReconnection(true)
+                    .setPath("/socket.io/")
+                    .setTransports(arrayOf(io.socket.engineio.client.transports.WebSocket.NAME))
+                    .setSecure(true)              // Add this
+                    .build()
+                val socketUri = URI.create("wss://app.cmscure.com")
+                socket = IO.socket(socketUri, opts)
                 setupSocketHandlers(config.projectId)
                 socket?.connect()
-                logDebug("🔌 Attempting socket connection...")
-            } catch (e: Exception) { logError("Socket setup exception: ${e.message}") }
+                logDebug("🔌 Attempting socket connection to: $socketUri")
+            } catch (e: Exception) {
+                logError("Socket connection setup exception: ${e.message}")
+            }
         }
     }
 
@@ -304,9 +315,8 @@ object CMSCureSDK {
             val ciphertext = encryptedBytesWithTag.copyOfRange(0, encryptedBytesWithTag.size - 16)
             val tag = encryptedBytesWithTag.copyOfRange(encryptedBytesWithTag.size - 16, encryptedBytesWithTag.size)
 
-            // Construct the final payload object with the correct structure
+            // Send as a single emit with all data
             val payloadForServer = org.json.JSONObject().apply {
-                // CORRECTED: Use android.util.Base64
                 put("iv", Base64.encodeToString(iv, Base64.NO_WRAP))
                 put("ciphertext", Base64.encodeToString(ciphertext, Base64.NO_WRAP))
                 put("tag", Base64.encodeToString(tag, Base64.NO_WRAP))
@@ -314,12 +324,11 @@ object CMSCureSDK {
             }
 
             socket?.emit("handshake", payloadForServer)
-            logDebug("Handshake emitted with correctly structured payload.")
+            logDebug("Handshake emitted with encrypted payload.")
         } catch (e: Exception) {
             logError("Handshake emission exception: ${e.message}")
         }
     }
-
     /** Returns a translation for the given key and tab, or an empty string if not found. */
     fun translation(forKey: String, inTab: String): String = synchronized(cacheLock) {
         return cache[inTab]?.get(forKey)?.get(currentLanguage) ?: ""
@@ -327,7 +336,7 @@ object CMSCureSDK {
 
     /** Returns a color hex string for the given key, or null if not found. */
     fun colorValue(forKey: String): String? = synchronized(cacheLock) {
-        return cache[COLORS_UPDATED]?.get(forKey)?.get("color")
+        return cache["__colors__"]?.get(forKey)?.get("color")
     }
 
     /** Returns an image URL string for the given global asset key, or null if not found. */
@@ -356,7 +365,7 @@ object CMSCureSDK {
     fun sync(screenName: String, completion: ((Boolean) -> Unit)? = null) {
         when (screenName) {
             IMAGES_UPDATED -> syncImages(completion)
-            COLORS_UPDATED -> syncTranslations("__colors__", completion)
+            COLORS_UPDATED -> syncTranslations("__colors__", completion)  // Already correct
             else -> syncTranslations(screenName, completion)
         }
     }
