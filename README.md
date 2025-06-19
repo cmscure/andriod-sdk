@@ -3,26 +3,25 @@
 [![JitPack](https://jitpack.io/v/cmscure/andriod-sdk.svg)](https://jitpack.io/#cmscure/andriod-sdk)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
-The official Android SDK for integrating your Kotlin-based Android application with the CMSCure platform. This SDK enables real-time content updates, multi-language localization, remote asset delivery (text, colors, images), and secure, offline-first content caching.
+The official Android SDK for integrating your Kotlin-based Android application with the CMSCure platform. This SDK enables you to manage and deliver dynamic content—text, colors, images, and structured data—with real-time updates and a robust offline-first caching system.
 
 ## Features
 
--   **Simplified Setup:** Easy initialization and configuration in your Application class.
--   **Dynamic Content:** Fetch translations, global colors, and image URLs from CMSCure.
--   **Global Image Assets:** Manage a central library of images, independent of specific app screens.
--   **Automatic Image Caching:** Seamlessly caches all remote images using **Coil** for robust offline support and performance. No extra setup required.
--   **Real-time Updates:** Leverages WebSockets for live content changes, with updates propagated via Kotlin Flows.
--   **Offline First:** Caches all content locally, ensuring your app is fully functional without a network connection.
--   **Language Management:** Supports dynamic language switching with automatic content refreshing.
--   **Modern Android:** Designed for Kotlin and easily integrable with Jetpack Compose and traditional View systems.
--   **Secure:** Uses API keys and project secrets for authenticated communication.
+-   **Live Content Management:** Fetch and display translations, global color schemes, and image URLs from your CMSCure dashboard.
+-   **Dynamic Lists via Data Stores:** Effortlessly manage and display structured content like product catalogs, news feeds, or feature lists using `cureDataStore`.
+-   **Full Localization Support:** Built-in support for multiple languages, including for complex, nested data within Data Stores.
+-   **Reactive Jetpack Compose Integration:** A suite of `@Composable` functions (`cureString`, `cureColor`, `cureImage`, `cureDataStore`) automatically keeps your UI in sync with your content.
+-   **Real-time Updates:** Utilizes a persistent WebSocket connection to receive live content updates, propagated through a Kotlin `SharedFlow`.
+-   **Robust Offline Caching:** Persists all fetched content to disk, ensuring your app is fully functional without a network connection.
+-   **Automatic Image Caching:** Seamlessly caches all remote images using **Coil**. The SDK provides a simple `CureSDKImage` composable for easy display.
+-   **Simple Configuration:** Get up and running with just your Project ID and API Key.
 
 ## Requirements
 
--   Android API Level 26+ (Oreo) - Required for modern cryptographic APIs.
+-   Android API Level 26+ (Oreo)
 -   Kotlin 1.8+
--   Jetpack Compose (for Compose examples)
--   Coil Image Loading Library
+-   Jetpack Compose
+-   An active CMSCure project and its associated credentials.
 
 ## Installation
 
@@ -43,10 +42,10 @@ dependencyResolutionManagement {
 // In your app/build.gradle.kts
 dependencies {
     // CMSCure SDK
-    implementation("com.github.cmscure:andriod-sdk:1.0.5") // Use the latest version
+    implementation("com.github.cmscure:andriod-sdk:1.0.6") // Use the latest version
 
-    // Add Coil for displaying images (works with the SDK's internal caching)
-    implementation("io.coil-kt:coil-compose:2.5.0") // if needed
+    // Add Coil for displaying images. The SDK's helpers depend on it.
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }
 ```
 
@@ -65,13 +64,10 @@ Initialize and configure the SDK **once** when your application starts. The `App
 ```kotlin
 // In YourApplication.kt (your custom Application class)
 import android.app.Application
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.cmscure.sdk.CMSCureSDK
 
 class YourApplication : Application() {
 
-    @RequiresApi(Build.VERSION_CODES.O) // configure() requires API 26+
     override fun onCreate() {
         super.onCreate()
 
@@ -114,54 +110,132 @@ LaunchedEffect(Unit) {
 }
 ```
 
-### Fetching Content
+## Jetpack Compose Usage (Recommended)
 
-Use these methods to get the current cached values.
+The easiest way to use the SDK is with its reactive `@Composable` functions. They return a `State<T>` object that automatically updates your UI when content changes in the CMS.
 
-**Translations:**
+### Displaying Text, Colors, and Images
+
+* `cureString(key, tab, default)`: For a piece of text.
+* `cureColor(key, default)`: For a global color.
+* `cureImage(key)`: For a global image asset URL.
+* `CureSDKImage(url, ...)`: A ready-to-use Composable for displaying images with automatic caching.
+
+### Displaying Dynamic Lists with Data Stores
+
+Use `cureDataStore(apiIdentifier)` to get a reactive list of structured data.
 ```kotlin
-val pageTitle = CMSCureSDK.translation(forKey = "welcome_title", inTab = "home_screen")
+@Composable
+fun ProductList() {
+    val products by cureDataStore("featured_products")
+
+    LazyColumn {
+        items(products) { product ->
+            // Access localized and non-localized fields
+            Text(product.data["name"]?.localizedString ?: "N/A")
+            Text("Price: ${product.data["price"]?.doubleValue ?: 0.0}")
+        }
+    }
+}
 ```
 
-**Colors:**
-Returns a hex string (e.g., `"#FF5733"`) or `null`.
+## Comprehensive Compose Example
 ```kotlin
-val primaryColorHex: String? = CMSCureSDK.colorValue(forKey = "primary_brand_color")
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import com.cmscure.sdk.*
+
+@Composable
+fun StoreScreen() {
+    // 1. Define reactive properties for your content
+    val screenTitle by cureString("store_title", tab = "store_screen", default = "Our Store")
+    val accentColor by cureColor("accent_color", default = Color.Blue)
+    val products by cureDataStore("featured_products")
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = screenTitle,
+            style = MaterialTheme.typography.headlineLarge,
+            color = accentColor,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        // 2. Display the dynamic list from the Data Store
+        if (products.isEmpty()) {
+            CircularProgressIndicator()
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(products) { product ->
+                    ProductCard(product = product)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductCard(product: DataStoreItem) {
+    Card(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column {
+            // 3. Use the SDK's image composable for easy, cached images
+            CureSDKImage(
+                url = product.data["image_url"]?.stringValue,
+                contentDescription = "Image of ${product.data["name"]?.localizedString ?: "product"}",
+                modifier = Modifier.fillMaxWidth().height(180.dp),
+                contentScale = ContentScale.Crop
+            )
+
+            Column(Modifier.padding(16.dp)) {
+                // 4. Access localized and simple values from the item's data
+                Text(
+                    text = product.data["name"]?.localizedString ?: "Unnamed Product",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                // Use Kotlin's 'let' for safe handling of the optional price
+                product.data["price"]?.doubleValue?.let { price ->
+                    Text(
+                        text = String.format("$%.2f", price),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
+}
 ```
 
-### Fetching & Displaying Images
+## Traditional Views & Manual Access
+For XML-based UIs or other architectures, you can fetch data directly and observe the `contentUpdateFlow` for changes.
 
-The SDK supports two ways to manage images, both with automatic offline caching provided by its internal Coil integration.
-
-**1. Global Image Assets (Recommended)**
-Fetch a URL from your central image library.
+### Observing Updates
+In an Activity or Fragment, collect the flow within a lifecycle-aware coroutine scope.
 ```kotlin
-val logoUrl: URL? = CMSCureSDK.imageURL(forKey = "logo_primary")
+lifecycleScope.launch {
+    CMSCureSDK.contentUpdateFlow.collectLatest { updatedIdentifier ->
+        Log.d("MyApp", "Content updated for: $updatedIdentifier. Refreshing UI.")
+        // Manually update your TextViews, ImageViews, etc.
+        updateAllUI()
+    }
+}
 ```
-
-**2. Screen-Dependent Image URLs (Legacy)**
-Fetch a URL stored as a value within a translations tab.
-```kotlin
-val bannerUrl: URL? = CMSCureSDK.imageUrl(forKey = "hero_image", inTab = "home_assets")
-```
-
-**Displaying Images in Jetpack Compose**
-To benefit from the SDK's automatic caching, simply use the standard `AsyncImage` composable from Coil. The SDK ensures the image is cached in the background, so `AsyncImage` can load it instantly from the cache when available.
-
-```kotlin
-import coil.compose.AsyncImage
-
-// In your Composable...
-val logoUrl = CMSCureSDK.imageURL(forKey = "logo_primary")
-
-AsyncImage(
-    model = logoUrl?.toString(),
-    contentDescription = "Company Logo",
-    placeholder = painterResource(id = R.drawable.placeholder), // Optional
-    error = painterResource(id = R.drawable.error_image) // Optional
-)
-```
+### Manual Fetching
+* `CMSCureSDK.translation(forKey: "key", inTab: "...")`
+* `CMSCureSDK.colorValue(forKey: "key")`
+* `CMSCureSDK.imageURL(forKey: "key")`
+* `CMSCureSDK.getStoreItems(forIdentifier: "...")`
+* `CMSCureSDK.syncStore(apiIdentifier: "...") { ... }`
 
 ## License
-
-CMSCure Android SDK is released under the **MIT** License. See `LICENSE.md` for details.
+CMSCure Android SDK is released under the MIT License. See `LICENSE.md` for details.

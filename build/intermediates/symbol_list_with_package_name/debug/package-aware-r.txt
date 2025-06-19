@@ -1,2 +1,0 @@
-com.cmscure.sdk
-xml network_security_config
