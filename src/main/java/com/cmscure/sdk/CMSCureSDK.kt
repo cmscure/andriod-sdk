@@ -585,10 +585,15 @@ fun cureString(key: String, tab: String): State<String> = cureString(key, tab, d
  * A Composable that provides a reactive state for a single color.
  */
 @Composable
-fun cureColor(key: String, default: Color): State<Color> {
+fun cureColor(key: String, default: Color = Color.Gray): State<Color> {
     fun parseColor(hex: String?) = hex?.let {
-        try { Color(android.graphics.Color.parseColor(it)) } catch (e: Exception) { default }
+        try {
+            Color(android.graphics.Color.parseColor(it))
+        } catch (e: Exception) {
+            default
+        }
     } ?: default
+
     return produceState(initialValue = parseColor(CMSCureSDK.colorValue(forKey = key))) {
         CMSCureSDK.contentUpdateFlow.collectLatest { id ->
             if (id == CMSCureSDK.COLORS_UPDATED || id == CMSCureSDK.ALL_SCREENS_UPDATED) {
@@ -597,10 +602,6 @@ fun cureColor(key: String, default: Color): State<Color> {
         }
     }
 }
-
-/** Overload for cureColor with a default of Color.Gray. */
-@Composable
-fun cureColor(key: String): State<Color> = cureColor(key, default = Color.Gray)
 
 
 /**
