@@ -48,6 +48,12 @@ import java.lang.reflect.Type
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
+import java.security.MessageDigest
+import javax.crypto.Cipher
+import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import android.util.Base64
+
 
 /**
  * The primary singleton object for interacting with the CMSCure backend.
@@ -64,21 +70,26 @@ object CMSCureSDK {
     data class CureConfiguration(val projectId: String, val apiKey: String)
     data class ImageAsset(val key: String, val url: String)
 
-    private data class AuthResult(val token: String?, val tabs: List<String>?, val stores: List<String>?)
+    private data class EncryptedPayload(val iv: String, val ciphertext: String, val tag: String)
+    private data class AuthResult(
+        val token: String?,
+        @SerializedName("projectSecret") val receivedProjectSecret: String?,
+        val tabs: List<String>?,
+        val stores: List<String>?
+    )
     private data class TranslationKeyItem(val key: String, val values: Map<String, String>)
     private data class TranslationResponse(val keys: List<TranslationKeyItem>?)
     private data class LanguagesResponse(val languages: List<String>?)
     private data class DataStoreResponse(val items: List<DataStoreItem>)
 
-    // --- Core SDK State ---
     private var configuration: CureConfiguration? = null
     private val configLock = Any()
     private var authToken: String? = null
+    private var symmetricKey: SecretKeySpec? = null
     var debugLogsEnabled: Boolean = true
     internal var applicationContext: Context? = null
     internal var imageLoader: ImageLoader? = null
 
-    // --- Caching ---
     private var cache: MutableMap<String, MutableMap<String, MutableMap<String, String>>> = mutableMapOf()
     private var dataStoreCache: MutableMap<String, List<DataStoreItem>> = mutableMapOf()
     private val cacheLock = Any()
@@ -86,7 +97,6 @@ object CMSCureSDK {
     private var knownProjectTabs: MutableSet<String> = mutableSetOf()
     private var knownDataStoreIdentifiers: MutableSet<String> = mutableSetOf()
 
-    // --- Persistence ---
     private const val PREFS_NAME = "CMSCureSDKPrefs"
     private const val KEY_CURRENT_LANGUAGE = "currentLanguage"
     private const val KEY_AUTH_TOKEN = "authToken"
@@ -96,7 +106,6 @@ object CMSCureSDK {
     private const val DATA_STORE_LIST_FILE_NAME = "cmscure_datastore_list.json"
     private var sharedPreferences: SharedPreferences? = null
 
-    // --- Networking & UI Flow ---
     private var apiService: ApiService? = null
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var socket: Socket? = null
@@ -104,7 +113,6 @@ object CMSCureSDK {
     private val _contentUpdateFlow = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
     val contentUpdateFlow: SharedFlow<String> = _contentUpdateFlow.asSharedFlow()
 
-    // --- Constants for Update Flow ---
     const val ALL_SCREENS_UPDATED = "__ALL_SCREENS_UPDATED__"
     const val COLORS_UPDATED = "__COLORS_UPDATED__"
     const val IMAGES_UPDATED = "__IMAGES_UPDATED__"
@@ -112,24 +120,18 @@ object CMSCureSDK {
     private interface ApiService {
         @POST("/api/sdk/auth")
         suspend fun authenticateSdk(@Body authRequest: Map<String, String>): AuthResult
-
         @POST("/api/sdk/translations/{projectId}/{tabName}")
         suspend fun getTranslations(@Path("projectId") projectId: String, @Path("tabName") tabName: String, @Header("X-API-Key") apiKey: String): TranslationResponse
-
         @GET("/api/sdk/images/{projectId}")
         suspend fun getImages(@Path("projectId") projectId: String, @Header("X-API-Key") apiKey: String): List<ImageAsset>
-
         @GET("/api/sdk/store/{projectId}/{apiIdentifier}")
         suspend fun getStore(@Path("projectId") projectId: String, @Path("apiIdentifier") apiIdentifier: String, @Header("X-API-Key") apiKey: String): DataStoreResponse
-
         @POST("/api/sdk/languages/{projectId}")
         suspend fun getAvailableLanguages(@Path("projectId") projectId: String, @Header("X-API-Key") apiKey: String): LanguagesResponse
     }
 
-    private val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(JSONValue::class.java, JSONValue.GsonAdapter())
-        .setLenient()
-        .create()
+    private val gson: Gson = GsonBuilder().registerTypeAdapter(JSONValue::class.java, JSONValue.GsonAdapter()).setLenient().create()
+
 
     /**
      * Initializes the SDK with the application context.
@@ -153,8 +155,8 @@ object CMSCureSDK {
             logError("Config failed: Project ID and API Key cannot be empty.")
             return
         }
-        val serverUrl = try { URL("https://app.cmscure.com") } catch (e: MalformedURLException) {
-            logError("Config failed: Invalid server URL 'https://app.cmscure.com'"); return
+        val serverUrl = try { URL("https://app.cmscure.com") } catch (e: Exception) {
+            logError("Config failed: Invalid server URL"); return
         }
 
         synchronized(configLock) {
@@ -216,8 +218,14 @@ object CMSCureSDK {
         coroutineScope.launch {
             try {
                 val authResult = apiService?.authenticateSdk(mapOf("apiKey" to config.apiKey, "projectId" to config.projectId))
-                if (authResult?.token != null) {
+
+                // CORRECTED: Use `receivedProjectSecret` which matches the data class definition
+                if (authResult?.token != null && authResult.receivedProjectSecret != null) {
                     authToken = authResult.token
+
+                    // CORRECTED: Pass the correct property to the function
+                    deriveSymmetricKey(authResult.receivedProjectSecret)
+
                     synchronized(cacheLock) {
                         knownProjectTabs = (authResult.tabs ?: emptyList()).toMutableSet()
                         knownDataStoreIdentifiers = (authResult.stores ?: emptyList()).toMutableSet()
@@ -227,7 +235,7 @@ object CMSCureSDK {
                     connectSocketIfNeeded()
                     syncIfOutdated()
                 } else {
-                    logError("Auth failed: Response missing token.")
+                    logError("Auth failed: Response missing token or projectSecret.")
                 }
             } catch (e: Exception) {
                 logError("🆘 Auth exception: ${e.message}")
@@ -235,60 +243,80 @@ object CMSCureSDK {
         }
     }
 
+    private fun deriveSymmetricKey(secret: String) {
+        try {
+            val secretData = secret.toByteArray(Charsets.UTF_8)
+            val hashedSecret = MessageDigest.getInstance("SHA-256").digest(secretData)
+            this.symmetricKey = SecretKeySpec(hashedSecret, "AES")
+            logDebug("🔑 Symmetric key derived successfully.")
+        } catch (e: Exception) { logError("⚠️ Failed to derive symmetric key: ${e.message}") }
+    }
+
     private fun connectSocketIfNeeded() {
         val config = getCurrentConfiguration() ?: return
         if (socket?.connected() == true) return
-
         synchronized(socketLock) {
-            socket?.disconnect()?.off()
             try {
-                val opts = IO.Options.builder()
-                    .setForceNew(true)
-                    .setReconnection(true)
-                    .setPath("/socket.io/")
-                    .setTransports(arrayOf(io.socket.engineio.client.transports.WebSocket.NAME))
-                    .build()
-                val socketUri = URI.create("wss://app.cmscure.com")
-                socket = IO.socket(socketUri, opts)
+                val opts = IO.Options.builder().setPath("/socket.io/").setTransports(arrayOf(io.socket.engineio.client.transports.WebSocket.NAME)).build()
+                socket = IO.socket(URI.create("wss://app.cmscure.com"), opts)
                 setupSocketHandlers(config.projectId)
                 socket?.connect()
-                logDebug("🔌 Attempting socket connection to: $socketUri")
-            } catch (e: Exception) {
-                logError("Socket connection setup exception: ${e.message}")
-            }
+                logDebug("🔌 Attempting socket connection...")
+            } catch (e: Exception) { logError("Socket setup exception: ${e.message}") }
         }
     }
 
     private fun setupSocketHandlers(projectId: String) {
         socket?.on(Socket.EVENT_CONNECT) {
             logDebug("🟢✅ Socket connected! SID: ${socket?.id()}")
-            socket?.emit("handshake", org.json.JSONObject(mapOf("projectId" to projectId)))
+            sendSocketHandshake(projectId)
         }
-        socket?.on("handshake_ack") { logDebug("🤝 Handshake Acknowledged by server.") }
-        socket?.on("translationsUpdated") { handleSocketUpdate(it, isDataStore = false) }
-        socket?.on("dataStoreUpdated") { handleSocketUpdate(it, isDataStore = true) }
+        socket?.on("handshake_ack") { logDebug("🤝 Handshake Acknowledged.") }
+        socket?.on("translationsUpdated") { handleSocketUpdate(it, false) }
+        socket?.on("dataStoreUpdated") { handleSocketUpdate(it, true) }
         socket?.on(Socket.EVENT_DISCONNECT) { logDebug("🔌 Socket disconnected.") }
         socket?.on(Socket.EVENT_CONNECT_ERROR) { args -> logError("🆘 Socket connection error: ${args.joinToString()}") }
     }
 
     private fun handleSocketUpdate(args: Array<Any>, isDataStore: Boolean) {
         val payload = args.firstOrNull() as? org.json.JSONObject
-        if (isDataStore) {
-            val apiIdentifier = payload?.optString("storeApiIdentifier")
-            if (!apiIdentifier.isNullOrBlank()) {
-                logDebug("📡 'dataStoreUpdated' event received for: '$apiIdentifier'. Syncing...")
-                syncStore(apiIdentifier)
+        val identifier = if(isDataStore) payload?.optString("storeApiIdentifier") else payload?.optString("screenName")
+        if (!identifier.isNullOrBlank()) {
+            if (identifier.equals("__ALL__", ignoreCase = true)) syncIfOutdated()
+            else if(isDataStore) syncStore(identifier)
+            else sync(identifier)
+        }
+    }
+
+    private fun sendSocketHandshake(projectId: String) {
+        val currentSymKey = symmetricKey ?: run { logError("Handshake failed: Symmetric key is missing."); return }
+        logDebug("🤝 Sending handshake for projectId: $projectId")
+        try {
+            val handshakeBody = mapOf("projectId" to projectId)
+            val jsonToEncrypt = gson.toJson(handshakeBody).toByteArray(Charsets.UTF_8)
+
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            val iv = ByteArray(12).also { java.security.SecureRandom().nextBytes(it) }
+            val gcmSpec = GCMParameterSpec(128, iv)
+            cipher.init(Cipher.ENCRYPT_MODE, currentSymKey, gcmSpec)
+            val encryptedBytesWithTag = cipher.doFinal(jsonToEncrypt)
+
+            val ciphertext = encryptedBytesWithTag.copyOfRange(0, encryptedBytesWithTag.size - 16)
+            val tag = encryptedBytesWithTag.copyOfRange(encryptedBytesWithTag.size - 16, encryptedBytesWithTag.size)
+
+            // Construct the final payload object with the correct structure
+            val payloadForServer = org.json.JSONObject().apply {
+                // CORRECTED: Use android.util.Base64
+                put("iv", Base64.encodeToString(iv, Base64.NO_WRAP))
+                put("ciphertext", Base64.encodeToString(ciphertext, Base64.NO_WRAP))
+                put("tag", Base64.encodeToString(tag, Base64.NO_WRAP))
+                put("projectId", projectId)
             }
-        } else {
-            val screenName = payload?.optString("screenName")
-            if (!screenName.isNullOrBlank()) {
-                logDebug("📡 'translationsUpdated' event received for: '$screenName'. Syncing...")
-                if (screenName.equals("__ALL__", ignoreCase = true)) {
-                    syncIfOutdated()
-                } else {
-                    sync(screenName)
-                }
-            }
+
+            socket?.emit("handshake", payloadForServer)
+            logDebug("Handshake emitted with correctly structured payload.")
+        } catch (e: Exception) {
+            logError("Handshake emission exception: ${e.message}")
         }
     }
 
