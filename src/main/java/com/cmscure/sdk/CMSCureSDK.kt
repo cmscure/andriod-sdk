@@ -580,12 +580,12 @@ fun cureString(key: String, tab: String, default: String = ""): State<String> {
 /**
  * A Composable that provides a reactive state for a single color.
  */
-@JvmOverloads
 @Composable
 fun cureColor(key: String, default: Color = Color.Gray): State<Color> {
     fun parseColor(hex: String?) = hex?.let {
         try { Color(android.graphics.Color.parseColor(it)) } catch (e: Exception) { default }
     } ?: default
+
     return produceState(initialValue = parseColor(CMSCureSDK.colorValue(forKey = key))) {
         CMSCureSDK.contentUpdateFlow.collectLatest { id ->
             if (id == CMSCureSDK.COLORS_UPDATED || id == CMSCureSDK.ALL_SCREENS_UPDATED) {
@@ -598,7 +598,6 @@ fun cureColor(key: String, default: Color = Color.Gray): State<Color> {
 /**
  * A Composable that provides a reactive state for a global image asset's URL string.
  */
-@JvmOverloads
 @Composable
 fun cureImage(key: String, tab: String? = null, default: String? = null): State<String?> {
     val initialValue = if (tab == null) {
@@ -623,7 +622,6 @@ fun cureImage(key: String, tab: String? = null, default: String? = null): State<
 /**
  * A Composable that provides a reactive state for a list of items from a Data Store.
  */
-@JvmOverloads
 @Composable
 fun cureDataStore(apiIdentifier: String): State<List<DataStoreItem>> {
     return produceState<List<DataStoreItem>>(initialValue = CMSCureSDK.getStoreItems(forIdentifier = apiIdentifier)) {
@@ -640,7 +638,6 @@ fun cureDataStore(apiIdentifier: String): State<List<DataStoreItem>> {
  * A cache-enabled Composable for displaying images from CMSCure.
  * Internally uses Coil for image loading and caching.
  */
-@JvmOverloads
 @Composable
 fun CureSDKImage(
     url: String?,
