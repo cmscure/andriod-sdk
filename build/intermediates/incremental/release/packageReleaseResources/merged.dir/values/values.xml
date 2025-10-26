@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CureColorView">
+        <attr format="string" name="cureColorKey"/>
+        <attr format="color|reference" name="cureColorDefault"/>
+        <attr name="cureAutoStart"/>
+    </declare-styleable>
+    <declare-styleable name="CureImageView">
+        <attr format="string" name="cureImageKey"/>
+        <attr format="string" name="cureImageTab"/>
+        <attr format="string" name="cureImageDefaultUrl"/>
+        <attr format="reference" name="curePlaceholder"/>
+    </declare-styleable>
+    <declare-styleable name="CureTextView">
+        <attr format="string" name="cureKey"/>
+        <attr format="string" name="cureTab"/>
+        <attr format="string" name="cureDefault"/>
+        <attr format="boolean" name="cureAutoStart"/>
+        <attr format="string" name="cureTextColorKey"/>
+        <attr format="color|reference" name="cureTextColorDefault"/>
+    </declare-styleable>
+</resources>

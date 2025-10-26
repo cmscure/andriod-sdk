@@ -1,0 +1,1 @@
+/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/sample/xmlApp/build/intermediates/merged_res/debug/layout_activity_main.xml.flat /Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/sample/xmlApp/build/intermediates/merged_res/debug/values_values.arsc.flat 

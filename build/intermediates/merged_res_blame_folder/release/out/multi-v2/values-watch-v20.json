@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.cmscure.sdk-merged_res-52:/values-watch-v20/values-watch-v20.xml",
+            "map": [
+                {
+                    "source": "/Users/hamzahasan/.gradle/caches/8.12/transforms/80ce96bcddc17ee467695225a5ab0586/transformed/appcompat-1.6.1/res/values-watch-v20/values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.cmscure.sdk-mergeReleaseResources-50:/values-watch-v20/values-watch-v20.xml",
+            "map": [
+                {
+                    "source": "/Users/hamzahasan/.gradle/caches/8.12/transforms/80ce96bcddc17ee467695225a5ab0586/transformed/appcompat-1.6.1/res/values-watch-v20/values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    }
+                }
+            ]
+        }
+    ]
+}

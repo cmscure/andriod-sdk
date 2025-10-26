@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CMSCure XML Sample</string>
+    <string name="no_products_placeholder">No products cached yet. Trigger a refresh to load content.</string>
+    <string name="update_events_label">Last update event: %1$s</string>
+    <style name="Theme.CMSCureXml" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+</resources>

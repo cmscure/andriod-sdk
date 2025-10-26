@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/src/main/res"><file path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/src/main/res/values/attrs.xml" qualifiers=""><declare-styleable name="CureTextView">
+        <attr format="string" name="cureKey"/>
+        <attr format="string" name="cureTab"/>
+        <attr format="string" name="cureDefault"/>
+        <attr format="boolean" name="cureAutoStart"/>
+        <attr format="string" name="cureTextColorKey"/>
+        <attr format="color|reference" name="cureTextColorDefault"/>
+    </declare-styleable><declare-styleable name="CureImageView">
+        <attr format="string" name="cureImageKey"/>
+        <attr format="string" name="cureImageTab"/>
+        <attr format="string" name="cureImageDefaultUrl"/>
+        <attr format="reference" name="curePlaceholder"/>
+    </declare-styleable><declare-styleable name="CureColorView">
+        <attr format="string" name="cureColorKey"/>
+        <attr format="color|reference" name="cureColorDefault"/>
+        <attr name="cureAutoStart"/>
+    </declare-styleable></file><file name="network_security_config" path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/src/main/res/xml/network_security_config.xml" qualifiers="" type="xml"/></source></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/hamzahasan/Workspace/cmscure-core/CMSCureAndroidSDK/build/generated/res/resValues/release"/></dataSet><mergedItems><configuration qualifiers=""><declare-styleable name="CureColorView">
+        <attr format="string" name="cureColorKey"/>
+        <attr format="color|reference" name="cureColorDefault"/>
+        <attr name="cureAutoStart"/>
+    </declare-styleable><declare-styleable name="CureTextView">
+        <attr format="string" name="cureKey"/>
+        <attr format="string" name="cureTab"/>
+        <attr format="string" name="cureDefault"/>
+        <attr format="boolean" name="cureAutoStart"/>
+        <attr format="string" name="cureTextColorKey"/>
+        <attr format="color|reference" name="cureTextColorDefault"/>
+    </declare-styleable><declare-styleable name="CureImageView">
+        <attr format="string" name="cureImageKey"/>
+        <attr format="string" name="cureImageTab"/>
+        <attr format="string" name="cureImageDefaultUrl"/>
+        <attr format="reference" name="curePlaceholder"/>
+    </declare-styleable></configuration></mergedItems></merger>

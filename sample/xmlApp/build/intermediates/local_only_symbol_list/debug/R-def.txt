@@ -1,0 +1,25 @@
+R_DEF: Internal format may change without notice
+local
+id buttonGetStarted
+id buttonManualRefresh
+id cardCta
+id colorBadge
+id containerFeaturedProducts
+id imageHero
+id imageSecondary
+id spinnerLanguages
+id textCtaHint
+id textCtaTitle
+id textFeaturedProducts
+id textHeadline
+id textHeroBody
+id textHeroSubtitle
+id textLanguageLabel
+id textPaletteTitle
+id textUpdateEvents
+id valuePropCard
+layout activity_main
+string app_name
+string no_products_placeholder
+string update_events_label
+style Theme.CMSCureXml

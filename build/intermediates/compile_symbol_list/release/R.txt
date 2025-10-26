@@ -1,0 +1,29 @@
+int attr cureAutoStart 0x0
+int attr cureColorDefault 0x0
+int attr cureColorKey 0x0
+int attr cureDefault 0x0
+int attr cureImageDefaultUrl 0x0
+int attr cureImageKey 0x0
+int attr cureImageTab 0x0
+int attr cureKey 0x0
+int attr curePlaceholder 0x0
+int attr cureTab 0x0
+int attr cureTextColorDefault 0x0
+int attr cureTextColorKey 0x0
+int[] styleable CureColorView { 0x0, 0x0, 0x0 }
+int styleable CureColorView_cureAutoStart 0
+int styleable CureColorView_cureColorDefault 1
+int styleable CureColorView_cureColorKey 2
+int[] styleable CureImageView { 0x0, 0x0, 0x0, 0x0 }
+int styleable CureImageView_cureImageDefaultUrl 0
+int styleable CureImageView_cureImageKey 1
+int styleable CureImageView_cureImageTab 2
+int styleable CureImageView_curePlaceholder 3
+int[] styleable CureTextView { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }
+int styleable CureTextView_cureAutoStart 0
+int styleable CureTextView_cureDefault 1
+int styleable CureTextView_cureKey 2
+int styleable CureTextView_cureTab 3
+int styleable CureTextView_cureTextColorDefault 4
+int styleable CureTextView_cureTextColorKey 5
+int xml network_security_config 0x0

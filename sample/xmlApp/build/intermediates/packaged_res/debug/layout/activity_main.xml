@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:gravity="center_horizontal">
+
+        <com.cmscure.sdk.ui.CureTextView
+            android:id="@+id/textLanguageLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            app:cureKey="language_picker_label"
+            app:cureTab="marketing"
+            app:cureDefault="Language" />
+
+        <Spinner
+            android:id="@+id/spinnerLanguages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
+
+        <com.cmscure.sdk.ui.CureTextView
+            android:id="@+id/textHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+            android:textStyle="bold"
+            app:cureKey="hero_title"
+            app:cureTab="marketing"
+            app:cureDefault="Your marketing headline here"
+            app:cureTextColorKey="accent_color"
+            app:cureAutoStart="true" />
+
+        <com.cmscure.sdk.ui.CureTextView
+            android:id="@+id/textHeroSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:cureKey="hero_subtitle"
+            app:cureTab="marketing"
+            app:cureDefault="Tell your story in multiple languages" />
+
+        <com.cmscure.sdk.ui.CureTextView
+            android:id="@+id/textHeroBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:cureKey="hero_body"
+            app:cureTab="marketing"
+            app:cureDefault="Serve localized content instantly from CMSCure." />
+
+        <com.cmscure.sdk.ui.CureImageView
+            android:id="@+id/imageHero"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="centerCrop"
+            app:cureImageKey="hero_banner_primary"
+            app:cureImageDefaultUrl="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&amp;fit=crop&amp;w=1350&amp;q=80" />
+
+        <LinearLayout
+            android:id="@+id/cardCta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/white"
+            android:elevation="2dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.cmscure.sdk.ui.CureColorView
+                android:id="@+id/colorBadge"
+                android:layout_width="64dp"
+                android:layout_height="8dp"
+                app:cureColorKey="badge_color"
+                app:cureAutoStart="true" />
+
+            <com.cmscure.sdk.ui.CureTextView
+                android:id="@+id/textCtaTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textStyle="bold"
+                app:cureKey="cta_headline"
+                app:cureTab="marketing"
+                app:cureDefault="Get started" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonGetStarted"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Launch CMSCure" />
+
+            <com.cmscure.sdk.ui.CureTextView
+                android:id="@+id/textCtaHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                app:cureKey="cta_hint"
+                app:cureTab="marketing"
+                app:cureDefault="Try switching languages to see the SDK react." />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.cmscure.sdk.ui.CureImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="center_horizontal"
+                    android:scaleType="centerCrop"
+                    app:cureImageKey="feature_icon_growth"
+                    app:cureImageDefaultUrl="https://cdn-icons-png.flaticon.com/512/4221/4221419.png" />
+
+                <com.cmscure.sdk.ui.CureTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textStyle="bold"
+                    app:cureKey="value_prop_one_title"
+                    app:cureTab="marketing"
+                    app:cureDefault="Real-time updates" />
+
+                <com.cmscure.sdk.ui.CureTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cureKey="value_prop_one_body"
+                    app:cureTab="marketing"
+                    app:cureDefault="Push content changes instantly to every device." />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.cmscure.sdk.ui.CureImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="center_horizontal"
+                    android:scaleType="centerCrop"
+                    app:cureImageKey="feature_icon_security"
+                    app:cureImageDefaultUrl="https://cdn-icons-png.flaticon.com/512/3106/3106921.png" />
+
+                <com.cmscure.sdk.ui.CureTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textStyle="bold"
+                    app:cureKey="value_prop_two_title"
+                    app:cureTab="marketing"
+                    app:cureDefault="Secure delivery" />
+
+                <com.cmscure.sdk.ui.CureTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cureKey="value_prop_two_body"
+                    app:cureTab="marketing"
+                    app:cureDefault="Ship safely with end-to-end encryption and auditing." />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/valuePropCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#F5F2FF">
+
+            <com.cmscure.sdk.ui.CureTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                app:cureKey="value_prop_three_title"
+                app:cureTab="marketing"
+                app:cureDefault="Collaborative workflow" />
+
+            <com.cmscure.sdk.ui.CureTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:cureKey="value_prop_three_body"
+                app:cureTab="marketing"
+                app:cureDefault="Empower editors to localize content without developers." />
+        </LinearLayout>
+
+        <com.cmscure.sdk.ui.CureTextView
+            android:id="@+id/textPaletteTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:cureKey="color_palette_title"
+            app:cureTab="marketing"
+            app:cureDefault="Brand palette" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.cmscure.sdk.ui.CureColorView
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                app:cureColorKey="accent_color"
+                app:cureAutoStart="true" />
+
+            <com.cmscure.sdk.ui.CureColorView
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                app:cureColorKey="surface_color"
+                app:cureAutoStart="true" />
+
+            <com.cmscure.sdk.ui.CureColorView
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                app:cureColorKey="badge_color"
+                app:cureAutoStart="true" />
+        </LinearLayout>
+
+        <com.cmscure.sdk.ui.CureImageView
+            android:id="@+id/imageSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginTop="20dp"
+            android:scaleType="centerCrop"
+            app:cureImageKey="customer_showcase_banner"
+            app:cureImageDefaultUrl="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" />
+
+        <com.cmscure.sdk.ui.CureTextView
+            android:id="@+id/textFeaturedProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:cureKey="featured_products_title"
+            app:cureTab="marketing"
+            app:cureDefault="Featured products" />
+
+        <LinearLayout
+            android:id="@+id/containerFeaturedProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp" />
+
+        <TextView
+            android:id="@+id/textUpdateEvents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Last update event:"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+        <Button
+            android:id="@+id/buttonManualRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Manual refresh" />
+
+    </LinearLayout>
+
+</ScrollView>

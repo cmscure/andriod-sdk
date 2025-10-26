@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Declare shared attributes once globally -->
+    <attr name="cureAutoStart" format="boolean" />
+
+    <!-- Attributes for CureTextView -->
+    <declare-styleable name="CureTextView">
+        <attr name="cureKey" format="string" />
+        <attr name="cureTab" format="string" />
+        <attr name="cureDefault" format="string" />
+        <attr name="cureAutoStart" />  <!-- Reference the global declaration -->
+        <attr name="cureTextColorKey" format="string" />
+        <attr name="cureTextColorDefault" format="color" />
+    </declare-styleable>
+
+    <!-- Attributes for CureImageView -->
+    <declare-styleable name="CureImageView">
+        <attr name="cureImageKey" format="string" />
+        <attr name="cureImageTab" format="string" />
+        <attr name="cureImageDefaultUrl" format="string" />
+        <attr name="curePlaceholder" format="reference" />
+    </declare-styleable>
+
+    <!-- Attributes for CureColorView -->
+    <declare-styleable name="CureColorView">
+        <attr name="cureColorKey" format="string" />
+        <attr name="cureColorDefault" format="color" />
+        <attr name="cureAutoStart" />  <!-- Reference the global declaration -->
+    </declare-styleable>
+</resources>

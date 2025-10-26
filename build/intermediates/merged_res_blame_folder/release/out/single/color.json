@@ -1,0 +1,62 @@
+[
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_hint_foreground_material_light.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_hint_foreground_material_light.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_primary_text_material_light.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_primary_text_material_light.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_primary_text_disable_only_material_dark.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_primary_text_disable_only_material_dark.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_primary_text_material_dark.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_primary_text_material_dark.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_hint_foreground_material_dark.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_hint_foreground_material_dark.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_background_cache_hint_selector_material_dark.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_background_cache_hint_selector_material_dark.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/switch_thumb_material_dark.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/switch_thumb_material_dark.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_secondary_text_material_light.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_secondary_text_material_light.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/vector_tint_theme_color.xml",
+        "source": "com.cmscure.sdk-jetified-ui-release-1:/color/vector_tint_theme_color.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_primary_text_disable_only_material_light.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_primary_text_disable_only_material_light.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_background_cache_hint_selector_material_light.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_background_cache_hint_selector_material_light.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_secondary_text_material_dark.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_secondary_text_material_dark.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/abc_search_url_text.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/abc_search_url_text.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/switch_thumb_material_light.xml",
+        "source": "com.cmscure.sdk-appcompat-1.6.1-28:/color/switch_thumb_material_light.xml"
+    },
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/color/vector_tint_color.xml",
+        "source": "com.cmscure.sdk-jetified-ui-release-1:/color/vector_tint_color.xml"
+    }
+]

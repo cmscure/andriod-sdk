@@ -1,0 +1,17 @@
+com.cmscure.sdk
+attr cureAutoStart
+attr cureColorDefault
+attr cureColorKey
+attr cureDefault
+attr cureImageDefaultUrl
+attr cureImageKey
+attr cureImageTab
+attr cureKey
+attr curePlaceholder
+attr cureTab
+attr cureTextColorDefault
+attr cureTextColorKey
+styleable CureColorView cureAutoStart cureColorDefault cureColorKey
+styleable CureImageView cureImageDefaultUrl cureImageKey cureImageTab curePlaceholder
+styleable CureTextView cureAutoStart cureDefault cureKey cureTab cureTextColorDefault cureTextColorKey
+xml network_security_config

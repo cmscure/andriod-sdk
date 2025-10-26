@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "com.cmscure.sdk-merged_res-52:/xml/network_security_config.xml",
+        "source": "com.cmscure.sdk-main-53:/xml/network_security_config.xml"
+    }
+]
