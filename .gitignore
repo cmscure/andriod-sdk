@@ -1,0 +1,26 @@
+# Built outputs
+build/
+*.aar
+*.apk
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+
+# Local config (may contain SDK paths / passwords)
+local.properties
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Sample build artifacts
+sample/.gradle/
+sample/.idea/
+sample/local.properties
+sample/composeApp/build/
+sample/xmlApp/build/

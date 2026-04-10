@@ -18,6 +18,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 
 /**
  * Returns a [State] that stays in sync with a CMS-managed translation.
@@ -201,6 +204,18 @@ fun CureBackground(
 ) {
     val color = rememberCureColor(key, default)
     Box(modifier.background(color)) {
+        content()
+    }
+}
+
+/**
+ * Wraps [content] with the correct [LayoutDirection] (LTR / RTL) for the SDK's current language.
+ * Use this at the root of a screen to automatically mirror the UI for RTL languages.
+ */
+@Composable
+fun CureLayoutDirection(content: @Composable () -> Unit) {
+    val direction = if (CMSCureSDK.languageDirection.isRTL) LayoutDirection.Rtl else LayoutDirection.Ltr
+    CompositionLocalProvider(LocalLayoutDirection provides direction) {
         content()
     }
 }
