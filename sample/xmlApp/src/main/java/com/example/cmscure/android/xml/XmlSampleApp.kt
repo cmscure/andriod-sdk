@@ -28,9 +28,9 @@ class XmlSampleApp : Application() {
     }
 
     companion object {
-        private const val SAMPLE_PROJECT_ID = "f5ff03fa11338b74"
-        private const val SAMPLE_API_KEY = "d4ff36e2870860a5874062d60778c700cc2f082c6bcf949da718de6652686cfd"
-        private const val SAMPLE_PROJECT_SECRET = "bd2886fccd119c91d5762037eecbe2c202905861b1f39d10da02a877b547020a"
+        private const val SAMPLE_PROJECT_ID = "1524a7bd6b7d25ae"
+        private const val SAMPLE_API_KEY = "68e923c0a4db051026351b1d433ec31d30ceb0eb7bfaf414b2d3f6c091ba7bbd"
+        private const val SAMPLE_PROJECT_SECRET = "00c090eb310bd0148f9bb1239cac40826dee0b8f4b9d16cba568979858721c0b"
 
         private fun usingSamplePlaceholders(): Boolean = listOf(
             SAMPLE_PROJECT_ID,
