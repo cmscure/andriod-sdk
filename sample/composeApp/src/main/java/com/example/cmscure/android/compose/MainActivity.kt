@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.cmscure.sdk.CMSCureSDK
 import com.cmscure.sdk.Cure
 import com.cmscure.sdk.CureImage
@@ -95,11 +96,6 @@ private fun SampleApp() {
     val welcomeSubtitle = rememberCureString("welcome_subtitle", "home_screen", "Manage content, your way.")
     val ctaButton = rememberCureString("cta_button", "home_screen", "Get Started")
 
-    // ── Translations (settings_screen tab) ──
-    val settingsTitle = rememberCureString("settings_title", "settings_screen", "Settings")
-    val languageLabel = rememberCureString("language_label", "settings_screen", "Language")
-    val notificationsLabel = rememberCureString("notifications_label", "settings_screen", "Notifications")
-
     // ── Colors ──
     val primaryColor = rememberCureColor("primary_color", Color(0xFF007AFF))
     val accentColor = rememberCureColor("accent_color", Color(0xFFFF9500))
@@ -139,7 +135,6 @@ private fun SampleApp() {
                     IconButton(onClick = {
                         scope.launch(Dispatchers.IO) {
                             Cure.sync("home_screen")
-                            Cure.sync("settings_screen")
                             Cure.sync(CMSCureSDK.COLORS_UPDATED)
                             Cure.sync(CMSCureSDK.IMAGES_UPDATED)
                             Cure.syncStore("feature_products")
@@ -159,51 +154,6 @@ private fun SampleApp() {
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // ── Language Picker ──
-            item {
-                LanguagePicker(
-                    label = languageLabel,
-                    languages = availableLanguages,
-                    selectedLanguage = selectedLanguage,
-                    onLanguageSelected = { lang ->
-                        selectedLanguage = lang
-                        scope.launch {
-                            withContext(Dispatchers.IO) { Cure.setLanguage(lang, force = true) }
-                        }
-                    }
-                )
-            }
-
-            // ── Direction Badge ──
-            item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(if (direction.isRTL) accentColor else primaryColor)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = "Direction: ${if (direction.isRTL) "RTL ←" else "LTR →"}",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-            }
-
-            // ── Hero Section ──
-            item {
-                Column {
-                    Text(
-                        text = welcomeTitle,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        color = primaryColor
-                    )
-                    Spacer(Modifier.height(6.dp))
-                    Text(text = welcomeSubtitle, style = MaterialTheme.typography.titleMedium)
-                }
-            }
-
             // ── Hero Banner (global image) ──
             item {
                 CureImage(
@@ -219,18 +169,23 @@ private fun SampleApp() {
 
             // ── App Logo (global image) ──
             item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    CureImage(
-                        key = "app_logo",
-                        modifier = Modifier
-                            .size(56.dp)
-                            .clip(CircleShape),
-                        contentDescription = "App logo",
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Text("App Logo", style = MaterialTheme.typography.bodyMedium)
-                }
+                CureImage(
+                    key = "app_logo",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape),
+                    contentDescription = "App logo",
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            // ── Subtitle ──
+            item {
+                Text(
+                    text = welcomeSubtitle,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray
+                )
             }
 
             // ── CTA Button ──
@@ -238,9 +193,131 @@ private fun SampleApp() {
                 Button(
                     onClick = {},
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                    colors = ButtonDefaults.buttonColors(containerColor = accentColor),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Text(text = ctaButton, modifier = Modifier.padding(vertical = 4.dp))
+                    Text(
+                        text = ctaButton.ifBlank { "Get Started" },
+                        modifier = Modifier.padding(vertical = 6.dp),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            // ── Data Store: Feature Products ──
+            item {
+                Text(
+                    "Feature Products",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = primaryColor,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.height(4.dp))
+                Divider()
+            }
+
+            if (products.isEmpty()) {
+                item {
+                    Text(
+                        "No products available",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                    )
+                }
+            }
+
+            items(products, key = { it.id }) { item ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Product image from data store "image_url" field
+                        val imageUrl = item.string("image_url")
+                        if (!imageUrl.isNullOrBlank()) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = item.string("title"),
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .clip(MaterialTheme.shapes.small),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(Modifier.width(12.dp))
+                        }
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = item.string("title") ?: "—",
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                            )
+                            val price = item.double("price")
+                            if (price != null) {
+                                Text(
+                                    text = "$${String.format("%.2f", price)}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+
+                        // CTA link button
+                        val ctaUrl = item.ctaURL
+                        if (!ctaUrl.isNullOrBlank()) {
+                            Button(
+                                onClick = {},
+                                colors = ButtonDefaults.buttonColors(containerColor = accentColor),
+                                shape = MaterialTheme.shapes.small,
+                                contentPadding = ButtonDefaults.TextButtonContentPadding
+                            ) {
+                                Text("View", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── Language Section ──
+            item {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Language",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = if (direction.isRTL) "RTL" else "LTR",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                            color = if (direction.isRTL) accentColor else primaryColor,
+                            modifier = Modifier
+                                .background(
+                                    if (direction.isRTL) accentColor.copy(alpha = 0.15f) else primaryColor.copy(alpha = 0.15f),
+                                    shape = MaterialTheme.shapes.small
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    LanguagePicker(
+                        label = "",
+                        languages = availableLanguages,
+                        selectedLanguage = selectedLanguage,
+                        onLanguageSelected = { lang ->
+                            selectedLanguage = lang
+                            scope.launch {
+                                withContext(Dispatchers.IO) { Cure.setLanguage(lang, force = true) }
+                            }
+                        }
+                    )
                 }
             }
 
@@ -260,77 +337,6 @@ private fun SampleApp() {
                             ColorChip(primaryColor, "primary_color")
                             ColorChip(accentColor, "accent_color")
                             ColorChip(backgroundColor, "background_color")
-                        }
-                    }
-                }
-            }
-
-            // ── Settings Preview ──
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            settingsTitle,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text("• $languageLabel: ${selectedLanguage.uppercase()}")
-                        Text("• $notificationsLabel: ON")
-                    }
-                }
-            }
-
-            // ── Data Store: Feature Products ──
-            item {
-                Text("Feature Products", style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.height(4.dp))
-                Divider()
-            }
-
-            if (products.isEmpty()) {
-                item {
-                    Text(
-                        "No products yet — add a \"feature_products\" data store in the dashboard.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
-                }
-            }
-
-            items(products, key = { it.id }) { item ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = item.string("title") ?: "Untitled",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            val price = item.double("price")
-                            if (price != null) {
-                                Text(
-                                    text = "$${String.format("%.2f", price)}",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = accentColor
-                                )
-                            }
-                            val url = item.ctaURL
-                            if (!url.isNullOrBlank()) {
-                                Text(
-                                    text = url,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray
-                                )
-                            }
                         }
                     }
                 }

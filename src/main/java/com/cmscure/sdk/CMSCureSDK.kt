@@ -122,7 +122,7 @@ object CMSCureSDK {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var socket: Socket? = null
     private val socketLock = Any()
-    private val _contentUpdateFlow = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
+    private val _contentUpdateFlow = MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 64)
     val contentUpdateFlow: SharedFlow<String> = _contentUpdateFlow.asSharedFlow()
 
     const val ALL_SCREENS_UPDATED = "__ALL_SCREENS_UPDATED__"
@@ -668,7 +668,7 @@ object CMSCureSDK {
                         }
                         markStoreKnown(apiIdentifier)
                         persistDataStoreCacheToDisk()
-                        _contentUpdateFlow.tryEmit(apiIdentifier)
+                        _contentUpdateFlow.emit(apiIdentifier)
                         logDebug("✅ Synced data store '$apiIdentifier' with ${body.items.size} items.")
                         true
                     } else {
@@ -709,12 +709,34 @@ object CMSCureSDK {
         val tabs = synchronized(cacheLock) { knownProjectTabs.toList() }
         val stores = synchronized(cacheLock) { knownDataStoreIdentifiers.toList() }
 
-        (tabs + listOf(COLORS_UPDATED, IMAGES_UPDATED))
-            .distinct()
-            .forEach { sync(it) }
+        coroutineScope.launch {
+            val jobs = mutableListOf<Job>()
 
-        stores.distinct().forEach { syncStore(it) }
-        coroutineScope.launch { _contentUpdateFlow.tryEmit(ALL_SCREENS_UPDATED) }
+            (tabs + listOf(COLORS_UPDATED, IMAGES_UPDATED))
+                .distinct()
+                .forEach { screenName ->
+                    jobs += launch { syncSuspend(screenName) }
+                }
+
+            stores.distinct().forEach { identifier ->
+                jobs += launch { syncStoreSuspend(identifier) }
+            }
+
+            jobs.joinAll()
+            _contentUpdateFlow.emit(ALL_SCREENS_UPDATED)
+        }
+    }
+
+    private suspend fun syncSuspend(screenName: String) {
+        val deferred = CompletableDeferred<Boolean>()
+        sync(screenName) { success -> deferred.complete(success) }
+        deferred.await()
+    }
+
+    private suspend fun syncStoreSuspend(apiIdentifier: String) {
+        val deferred = CompletableDeferred<Boolean>()
+        syncStore(apiIdentifier) { success -> deferred.complete(success) }
+        deferred.await()
     }
 
     private fun syncTranslations(screenName: String, completion: ((Boolean) -> Unit)?) {
@@ -734,7 +756,7 @@ object CMSCureSDK {
                         }
                         markTabKnown(screenName)
                         persistCacheToDisk()
-                        _contentUpdateFlow.tryEmit(screenName)
+                        _contentUpdateFlow.emit(screenName)
                         logDebug("✅ Synced translations for '$screenName' with ${body.keys.size} entries.")
                         true
                     } else {
@@ -768,7 +790,7 @@ object CMSCureSDK {
                         }
                         markTabKnown(COLORS_UPDATED)
                         persistCacheToDisk()
-                        _contentUpdateFlow.tryEmit(COLORS_UPDATED)
+                        _contentUpdateFlow.emit(COLORS_UPDATED)
                         logDebug("✅ Synced ${colors.size} colors.")
                         true
                     } else {
@@ -800,7 +822,7 @@ object CMSCureSDK {
                             imageAssets.forEach { asset -> imageCache[asset.key] = mutableMapOf("url" to asset.url) }
                         }
                         persistCacheToDisk()
-                        _contentUpdateFlow.tryEmit(IMAGES_UPDATED)
+                        _contentUpdateFlow.emit(IMAGES_UPDATED)
                         logDebug("✅ Synced ${imageAssets.size} image assets.")
                         true
                     } else {

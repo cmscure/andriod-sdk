@@ -4,9 +4,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.cmscure.sdk.CMSCureSDK
 import com.cmscure.sdk.Cure
 import com.cmscure.sdk.CureLanguageDisplay
@@ -44,7 +49,6 @@ class MainActivity : AppCompatActivity() {
             CMSCureSDK.contentUpdateFlow.collectLatest { identifier ->
                 binding.textLastUpdate.text = "Last update: $identifier"
                 updateCta()
-                updateSettingsLabels()
                 if (!suppressSpinner) updateLanguageSelection(Cure.getLanguage())
                 if (identifier == "feature_products" || identifier == CMSCureSDK.ALL_SCREENS_UPDATED) {
                     renderProducts()
@@ -56,7 +60,6 @@ class MainActivity : AppCompatActivity() {
     private fun refreshAll() {
         lifecycleScope.launch(Dispatchers.IO) {
             Cure.sync("home_screen")
-            Cure.sync("settings_screen")
             Cure.sync(CMSCureSDK.COLORS_UPDATED)
             Cure.sync(CMSCureSDK.IMAGES_UPDATED)
             Cure.syncStore("feature_products")
@@ -103,8 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDirection(code: String) {
         val dir = LanguageDirection.direction(code)
-        binding.textDirection.text = if (dir.isRTL) "Direction: RTL ←" else "Direction: LTR →"
-        // Set layout direction for the whole content
+        binding.textDirection.text = if (dir.isRTL) "RTL" else "LTR"
         binding.root.layoutDirection = if (dir.isRTL) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
     }
 
@@ -113,13 +115,6 @@ class MainActivity : AppCompatActivity() {
     private fun updateCta() {
         val text = Cure.translation("cta_button", "home_screen").ifBlank { "Get Started" }
         binding.buttonCta.text = text
-    }
-
-    // ── Settings Labels ──
-
-    private fun updateSettingsLabels() {
-        val settingsTitle = Cure.translation("settings_title", "settings_screen").ifBlank { "Settings" }
-        binding.textSettingsTitle.text = settingsTitle
     }
 
     // ── Data Store: Feature Products ──
@@ -132,23 +127,84 @@ class MainActivity : AppCompatActivity() {
 
         if (items.isEmpty()) {
             val empty = TextView(this).apply {
-                text = "No products yet — add a \"feature_products\" data store in the dashboard."
+                text = "No products available"
                 setTextColor(0xFF999999.toInt())
+                setPadding(0, 24, 0, 24)
             }
             container.addView(empty)
             return
         }
 
         items.forEach { item ->
-            val row = layoutInflater.inflate(android.R.layout.simple_list_item_2, container, false)
-            val title = row.findViewById<TextView>(android.R.id.text1)
-            val subtitle = row.findViewById<TextView>(android.R.id.text2)
+            val card = CardView(this).apply {
+                radius = 16f
+                cardElevation = 2f
+                setContentPadding(24, 24, 24, 24)
+                useCompatPadding = true
+            }
 
-            title.text = item.string("title") ?: "Untitled"
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+            }
+
+            // Product image
+            val imageUrl = item.string("image_url")
+            if (!imageUrl.isNullOrBlank()) {
+                val imageView = ImageView(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(150, 150).apply {
+                        marginEnd = 24
+                    }
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                }
+                imageView.load(imageUrl) {
+                    crossfade(true)
+                    transformations(RoundedCornersTransformation(16f))
+                }
+                row.addView(imageView)
+            }
+
+            // Text column
+            val textCol = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+
+            val title = TextView(this).apply {
+                text = item.string("title") ?: "—"
+                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleSmall)
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+            }
+            textCol.addView(title)
+
             val price = item.double("price")
-            subtitle.text = if (price != null) "$${String.format("%.2f", price)}" else ""
+            if (price != null) {
+                val priceView = TextView(this).apply {
+                    text = "$${String.format("%.2f", price)}"
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
+                    setTextColor(0xFF999999.toInt())
+                }
+                textCol.addView(priceView)
+            }
 
-            container.addView(row)
+            row.addView(textCol)
+
+            // CTA button
+            val ctaUrl = item.ctaURL
+            if (!ctaUrl.isNullOrBlank()) {
+                val ctaBtn = com.google.android.material.button.MaterialButton(this).apply {
+                    text = "View"
+                    textSize = 12f
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                }
+                row.addView(ctaBtn)
+            }
+
+            card.addView(row)
+            container.addView(card)
         }
     }
 }

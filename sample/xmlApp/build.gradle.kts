@@ -51,5 +51,6 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.cardview:cardview:1.0.0")
     implementation("io.coil-kt:coil:2.5.0")
 }

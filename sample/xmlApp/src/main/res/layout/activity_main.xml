@@ -12,83 +12,34 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- Language Picker -->
-        <TextView
+        <!-- Hero Banner (global image: hero_banner) -->
+        <com.cmscure.sdk.ui.CureImageView
+            android:id="@+id/imageHeroBanner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Language"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge" />
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            app:cureImageKey="hero_banner" />
 
-        <Spinner
-            android:id="@+id/spinnerLanguages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp" />
-
-        <!-- Direction Badge -->
-        <TextView
-            android:id="@+id/textDirection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Direction: LTR →"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-        <!-- Welcome Title (home_screen / welcome_title) -->
-        <com.cmscure.sdk.ui.CureTextView
-            android:id="@+id/textWelcomeTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-            android:textStyle="bold"
-            app:cureKey="welcome_title"
-            app:cureTab="home_screen"
-            app:cureDefault="Welcome!"
-            app:cureAutoStart="true" />
+        <!-- App Logo (global image: app_logo) -->
+        <com.cmscure.sdk.ui.CureImageView
+            android:id="@+id/imageAppLogo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="centerCrop"
+            app:cureImageKey="app_logo" />
 
         <!-- Welcome Subtitle (home_screen / welcome_subtitle) -->
         <com.cmscure.sdk.ui.CureTextView
             android:id="@+id/textWelcomeSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_marginTop="12dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="#888888"
             app:cureKey="welcome_subtitle"
             app:cureTab="home_screen"
             app:cureDefault="Manage content, your way." />
-
-        <!-- Hero Banner (global image: hero_banner) -->
-        <com.cmscure.sdk.ui.CureImageView
-            android:id="@+id/imageHeroBanner"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="16dp"
-            android:scaleType="centerCrop"
-            app:cureImageKey="hero_banner" />
-
-        <!-- App Logo (global image: app_logo) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <com.cmscure.sdk.ui.CureImageView
-                android:id="@+id/imageAppLogo"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:scaleType="centerCrop"
-                app:cureImageKey="app_logo" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="App Logo"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
-        </LinearLayout>
 
         <!-- CTA Button (home_screen / cta_button) -->
         <com.google.android.material.button.MaterialButton
@@ -98,6 +49,62 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Get Started" />
+
+        <!-- Featured Products -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Feature Products"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="4dp"
+            android:background="#CCCCCC" />
+
+        <LinearLayout
+            android:id="@+id/containerProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" />
+
+        <!-- Language Section Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Language"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textDirection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LTR"
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                android:textStyle="bold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/spinnerLanguages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
 
         <!-- Color Palette -->
         <TextView
@@ -180,55 +187,6 @@
                     android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Settings Preview -->
-        <TextView
-            android:id="@+id/textSettingsTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Settings"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:textStyle="bold" />
-
-        <com.cmscure.sdk.ui.CureTextView
-            android:id="@+id/textLanguageLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cureKey="language_label"
-            app:cureTab="settings_screen"
-            app:cureDefault="Language" />
-
-        <com.cmscure.sdk.ui.CureTextView
-            android:id="@+id/textNotificationsLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:cureKey="notifications_label"
-            app:cureTab="settings_screen"
-            app:cureDefault="Notifications" />
-
-        <!-- Featured Products -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Feature Products"
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="4dp"
-            android:background="#CCCCCC" />
-
-        <LinearLayout
-            android:id="@+id/containerProducts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical" />
 
         <!-- Last Update Event -->
         <TextView
