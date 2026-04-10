@@ -43,7 +43,7 @@ android {
 
 dependencies {
     // CMSCure SDK from JitPack
-    implementation("com.github.cmscure:android-sdk:1.0.17")
+    implementation("com.github.cmscure:android-sdk:1.0.18")
 
     // Android Core
     implementation("androidx.core:core-ktx:1.12.0")
