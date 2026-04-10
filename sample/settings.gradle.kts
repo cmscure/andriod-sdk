@@ -23,6 +23,6 @@ include(
 
 includeBuild("..") {
     dependencySubstitution {
-        substitute(module("com.github.cmscure:andriod-sdk")).using(project(":"))
+        substitute(module("com.github.cmscure:android-sdk")).using(project(":"))
     }
 }

@@ -108,13 +108,13 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
                 groupId = "com.github.cmscure"
-                artifactId = "andriod-sdk"
-                version = "1.0.12"  // Bump version for the fix
+                artifactId = "android-sdk"
+                version = "1.0.16"  // SDK hardening release
 
                 pom {
                     name.set("CMSCure Android SDK")
                     description.set("The official Android SDK for CMSCure content management system.")
-                    url.set("https://github.com/cmscure/andriod-sdk")
+                    url.set("https://github.com/cmscure/android-sdk")
 
                     licenses {
                         license {
@@ -132,9 +132,9 @@ afterEvaluate {
                         }
                     }
                     scm {
-                        connection.set("scm:git:github.com/cmscure/andriod-sdk.git")
-                        developerConnection.set("scm:git:ssh://github.com/cmscure/andriod-sdk.git")
-                        url.set("https://github.com/cmscure/andriod-sdk/tree/main")
+                        connection.set("scm:git:github.com/cmscure/android-sdk.git")
+                        developerConnection.set("scm:git:ssh://github.com/cmscure/android-sdk.git")
+                        url.set("https://github.com/cmscure/android-sdk/tree/main")
                     }
                 }
             }

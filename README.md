@@ -1,6 +1,6 @@
 # CMSCure Android SDK
 
-[![JitPack](https://jitpack.io/v/cmscure/andriod-sdk.svg)](https://jitpack.io/#cmscure/andriod-sdk)
+[![JitPack](https://jitpack.io/v/cmscure/android-sdk.svg)](https://jitpack.io/#cmscure/android-sdk)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
 The official Android SDK for **CMSCure** — deliver translations, colors, images, and structured data to your native Android app with powerful offline caching, intelligent real-time updates, and full parity with the iOS SDK.
@@ -51,7 +51,7 @@ In your **app** `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.cmscure:andriod-sdk:1.0.12") // latest tag
+    implementation("com.github.cmscure:android-sdk:1.0.16")
     implementation("io.coil-kt:coil-compose:2.5.0")
 }
 ```

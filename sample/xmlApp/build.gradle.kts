@@ -42,8 +42,8 @@ android {
 }
 
 dependencies {
-    // CMSCure SDK - FIXED TYPO: "android" not "andriod "
-    implementation("com.github.cmscure:andriod-sdk")
+    // CMSCure SDK
+    implementation("com.github.cmscure:android-sdk")
 
     // If the above doesn't work, you might need to use the local module:
     // implementation(project(":cmscure-sdk"))
