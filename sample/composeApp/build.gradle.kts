@@ -50,7 +50,8 @@ android {
 }
 
 dependencies {
-    implementation("com.github.cmscure:android-sdk")
+    implementation("com.github.cmscure:android-sdk:1.0.17")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     val composeBom = platform("androidx.compose:compose-bom:2024.02.00")
     implementation(composeBom)

@@ -13,6 +13,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io")
     }
 }
 
@@ -20,9 +21,3 @@ include(
     ":composeApp",
     ":xmlApp"
 )
-
-includeBuild("..") {
-    dependencySubstitution {
-        substitute(module("com.github.cmscure:android-sdk")).using(project(":"))
-    }
-}
