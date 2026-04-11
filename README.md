@@ -51,7 +51,7 @@ In your **app** `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.cmscure:android-sdk:1.0.16")
+    implementation("com.github.cmscure:android-sdk:1.0.19")
     implementation("io.coil-kt:coil-compose:2.5.0")
 }
 ```

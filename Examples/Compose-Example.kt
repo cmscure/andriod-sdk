@@ -251,8 +251,9 @@ private fun ProductRow(product: DataStoreItem, accentColor: Color) {
         }
 
         // Optional CTA button
-        product.ctaURL?.let {
-            TextButton(onClick = { /* open URL */ }) {
+        product.ctaURL?.let { url ->
+            val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+            TextButton(onClick = { uriHandler.openUri(url) }) {
                 Text("View", color = accentColor, fontWeight = FontWeight.Bold)
             }
         }

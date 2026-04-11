@@ -325,7 +325,7 @@ class MainActivity : AppCompatActivity() {
             row.addView(info)
 
             // CTA button
-            item.ctaURL?.let {
+            item.ctaURL?.let { url ->
                 row.addView(Button(this).apply {
                     text = "View"
                     textSize = 12f
@@ -333,6 +333,9 @@ class MainActivity : AppCompatActivity() {
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
+                    setOnClickListener {
+                        startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+                    }
                 })
             }
 
